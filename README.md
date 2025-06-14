@@ -218,3 +218,44 @@ if ($return_var === 0 && file_exists($backup_file_path)) {
     echo $log_message;
 }
 ?>
+```
+## 📁 Struktur Direktori
+
+Struktur proyek ini diorganisir mengikuti pola desain **MVC (Model-View-Controller)** untuk memisahkan antara logika bisnis, interaksi data, dan tampilan. Ini membuat kode lebih terstruktur, mudah dikelola, dan skalabel.
+
+```bash
+KantinQueue/
+├── app/
+│   ├── config/
+│   │   └── config.php          # Konfigurasi database & URL
+│   ├── controllers/
+│   │   ├── AuthController.php
+│   │   ├── HomeController.php
+│   │   └── OrderController.php
+│   ├── core/
+│   │   ├── App.php             # Router utama aplikasi
+│   │   ├── Controller.php      # Controller dasar
+│   │   └── Database.php        # Kelas untuk koneksi DB
+│   ├── models/
+│   │   ├── Menu_model.php
+│   │   ├── Order_model.php
+│   │   └── User_model.php
+│   ├── views/
+│   │   ├── auth/
+│   │   ├── home/
+│   │   ├── order/
+│   │   └── templates/
+│   └── init.php                # File inisialisasi (bootstrap)
+│
+└── public/
+    ├── .htaccess               # Aturan untuk URL bersih
+    └── index.php               # Titik masuk tunggal (single entry point)
+```
+---
+
+## 👥 Kontributor Kelompok 9
+- [Muhammad Nur Faadil](https://github.com/bugsm)
+- [Ananda Anhar Subing](https://github.com/anndaanhr) 
+- [Syahdam Riski Firdaus](https://github.com/syahdamrzyy)
+
+---
