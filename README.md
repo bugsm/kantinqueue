@@ -80,6 +80,52 @@ BEGIN
 END$$
 DELIMITER ;
 ```
+## 🔄 Transaction 
+
+Dalam sistem **KantinQueue**, transaksi dikelola dengan prinsip **semua-atau-tidak sama sekali** (*atomicity*). Artinya, seluruh proses checkout (mulai dari input pesanan, detail, hingga pengurangan stok) dijalankan dalam satu blok transaksi. Jika salah satu langkah gagal, maka semua perubahan dibatalkan agar integritas data tetap terjaga.
+
+---
+
+### 🔁 Proses Checkout dengan Transaksi
+
+Ketika mahasiswa melakukan checkout keranjang, sistem menjalankan alur berikut:
+
+1. **Kadaluarsa Otomatis**  
+   Mengecek dan menandai pesanan sebelumnya yang statusnya `dipesan` dan tidak diproses selama lebih dari 15 menit menjadi `kadaluarsa`.
+
+2. **Generate Nomor Antrian Otomatis**  
+   Nomor antrian baru di-generate berdasarkan data pesanan terakhir (`A-001`, `A-002`, dst).
+
+3. **Hitung Total Harga**  
+   Sistem menghitung total harga seluruh item di dalam keranjang.
+
+4. **Insert Pesanan & Detail**  
+   Data dimasukkan ke tabel `pesanan` dan `detail_pesanan`.
+
+5. **Update Stok Menu**  
+   Mengurangi stok masing-masing menu sesuai jumlah yang dibeli.
+
+6. **Panggil Stored Procedure `SetEstimasiSelesai`**  
+   Estimasi waktu selesai diset berdasarkan kalkulasi dari database.
+
+7. ✅ **Commit jika Berhasil**, ❌ **Rollback jika Gagal**  
+   Jika semua proses berhasil, data di-*commit*. Jika ada error di tengah jalan, semua proses dibatalkan agar tidak ada data parsial tersimpan.
+
+---
+
+### 🧠 Contoh Struktur Transaksi
+
+```php
+$this->db->beginTransaction();
+
+try {
+    // Proses insert, update, dan call procedure...
+    $this->db->commit(); // ✅ Simpan semua perubahan jika sukses
+} catch (Exception $e) {
+    $this->db->rollBack(); // ❌ Batalkan semua perubahan jika gagal
+}
+```
+
 ## 📺 Stored Function
 
 Dalam sistem **KantinQueue**, stored function berperan seperti **layar monitor** — hanya membaca dan menampilkan data, tanpa mengubah isi database.
@@ -92,7 +138,7 @@ Function ini digunakan untuk mengambil informasi penting dengan cara yang efisie
 
 Function `total_pesanan_mahasiswa` berguna untuk menghitung total jumlah pesanan yang telah dilakukan oleh mahasiswa tertentu, berdasarkan `id_mahasiswa`.
 
-#### 📦 Definisi Function
+#### 📦 MySql Function
 
 ```sql
 DELIMITER $$
@@ -115,7 +161,7 @@ DELIMITER ;
 SELECT total_pesanan_mahasiswa(3) AS total_pesanan;
 ```
 
-## 🔄 Backup Otomatis dengan PHP (Laragon)
+## 🔄 Backup Database
 
 Untuk menjaga **integritas** dan **keamanan data**, sistem **KantinQueue** dilengkapi fitur **backup otomatis** yang dijalankan menggunakan skrip PHP dan tool `mysqldump` bawaan MySQL (via Laragon).
 
