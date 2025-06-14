@@ -13,4 +13,4 @@ Tujuan utama dari proyek ini adalah untuk mengimplementasikan fitur-fitur pemros
 
 ✅ Backup Otomatis
 
-![Uploading kantin.png…]()
+<img src="kantinqueue.png" alt="Tampilan KantinQueue" style="border-radius:8px; box-shadow:0 0 5px rgba(0,0,0,0.2); width:100%; max-width:600px;"/>
